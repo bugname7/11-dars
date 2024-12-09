@@ -1,5 +1,5 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect, useState, createContext } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
 import AuthLayout from "./layout/AuthLayout";
 import Home from "./pages/Home";
@@ -8,43 +8,93 @@ import "./App.css";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+export const Theme = createContext(null);
+export const Language = createContext(null);
+
 function App() {
+  const [theme, setTheme] = useState("light");
+  const [language, setLanguage] = useState("eng");
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const localToken = localStorage.getItem("token");
+    if (localToken) {
+      setToken(localToken);
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    if (location.state?.token) {
+      setToken(location.state.token);
+    }
+  }, [location.state]);
+
+  function PrivateRoute({ children }) {
+    if (!token) {
+      navigate("/login");
+      return null;
+    }
+    return children;
+  }
+  useEffect(() => {
+    const body = document.body;
+    if (theme == "light") {
+      body.classList.remove("dark");
+      body.classList.add("light");
+    } else {
+      body.classList.remove("light");
+      body.classList.add("dark");
+    }
+  }, [theme]);
+
   return (
     <div>
-      <Routes>
-        <Route
-          index
-          element={
-            <MainLayout>
-              <Home />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            <MainLayout>
-              <About />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <AuthLayout>
-              <Login></Login>
-            </AuthLayout>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <AuthLayout>
-              <Register />
-            </AuthLayout>
-          }
-        />
-      </Routes>
+      <Theme.Provider value={{ theme, setTheme }}>
+        <Language.Provider value={{ language, setLanguage }}>
+          <Routes>
+            <Route
+              index
+              element={
+                <PrivateRoute>
+                  <MainLayout>
+                    <Home />
+                  </MainLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <PrivateRoute>
+                  <MainLayout>
+                    <About />
+                  </MainLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <AuthLayout>
+                  <Login />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <AuthLayout>
+                  <Register />
+                </AuthLayout>
+              }
+            />
+          </Routes>
+        </Language.Provider>
+      </Theme.Provider>
     </div>
   );
 }

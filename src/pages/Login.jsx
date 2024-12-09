@@ -43,7 +43,9 @@ function Login() {
         },
       })
       .then((response) => {
-        navigate("/");
+        localStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("token", response.data.accessToken);
+        navigate("/", { state: { token: response.data.accessToken } });
       })
       .catch((error) => {
         if (error.status == 404 || error.status == 401) {
