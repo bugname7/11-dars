@@ -7,6 +7,7 @@ import About from "./pages/About";
 import "./App.css";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import CountryInfo from "./pages/CountryInfo";
 
 export const Theme = createContext(null);
 export const Language = createContext(null);
@@ -89,6 +90,14 @@ function App() {
               element={
                 <AuthLayout>
                   <Register />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/id"
+              element={
+                <AuthLayout>
+                  <CountryInfo />
                 </AuthLayout>
               }
             />

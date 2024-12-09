@@ -1,5 +1,5 @@
 {
-  "Eng": {
+  "en": {
     "translation": {
       "Population": "Population",
       "Region": "Region",
@@ -10,7 +10,7 @@
       "Search for a country": "Search for a country"
     }
   },
-  " Rus": {
+  " ru": {
     "translation": {
       "Population": "Население",
       "Region": "Область",
@@ -20,7 +20,7 @@
       "Enable Light Mode": "Включить световой режим",
       "Search for a country": "Поиск страны…"
     },
-    "Uzb": {
+    "uz": {
       "translation": {
         "Population": "Aholi",
         "Region": "Mintaqa",
