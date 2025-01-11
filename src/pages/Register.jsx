@@ -1,5 +1,6 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -8,13 +9,15 @@ function Register() {
     const [password, setPassword] = useState("");
     const [rePassword, setRePassword] = useState("");
     const [errors, setErrors] = useState({});
+    const [loader, setLoader] = useState(false)
+    const navigate = useNavigate()
 
     const validate = () => {
         const newErrors = {};
-        if (!username.trim()) newErrors.username = "Username is required";
-        if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) newErrors.email = "Valid email is required";
-        if (password.length < 4) newErrors.password = "Password must be at least 6 characters";
-        if (password !== rePassword) newErrors.rePassword = "Passwords do not match";
+        if (!username.trim()) newErrors.username = "Foydalanuvchi nomi talab qilinadi";
+        if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) newErrors.email = "Yaroqli elektron pochta manzili talab qilinadi";
+        if (password.length < 4) newErrors.password = "Parol kamida 6 ta belgidan iborat bo'lishi kerak";
+        if (password !== rePassword) newErrors.rePassword = "parol mos emas";
         return newErrors;
     };
     function remove() {
@@ -33,6 +36,31 @@ function Register() {
             setErrors({});
             console.log({ username, email, password });
         }
+        const user = {
+            username,
+            email,
+            password
+        }
+        setLoader(true)
+        axios.post(`https://auth-rg69.onrender.com/api/auth/signup`, user, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    navigate('/signin')
+                }
+            })
+            .catch(error => {
+                if (error.status === 400) {
+                    alert(error.message)
+                    return
+                }
+            })
+            .finally(() => {
+                setLoader(false)
+            })
         remove()
     };
 
@@ -94,8 +122,8 @@ function Register() {
                 </div>
                 {errors.rePassword && <p className="text-red-500 text-sm">{errors.rePassword}</p>}
 
-                <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md shadow-md mt-5">
-                    Register
+                <button disabled={loader} className="bg-green-500 text-xl hover:bg-green-600 text-white py-2 rounded-md shadow-md mt-5">
+                    {loader ? 'Loading' : 'Register'}
                 </button>
                 <div className="flex gap-5 ml-[100px] mt-4">
                     <p>About</p>
